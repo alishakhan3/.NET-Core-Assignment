@@ -1,0 +1,373 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@using Microsoft.AspNetCore.Identity
+@using WebApplication1.Areas.Identity.Data
+
+@inject UserManager<WebApplicationUser> UserManager
+
+<div class="text-center">
+    <h2>Welcome, <strong>@UserManager.FindByNameAsync(User.Identity.Name).Result.UserName</strong></h2>
+</div>
+
+<div class="container mt-5">
+    <button class="btn btn-info" onclick="showPersonalDataModal()" style="color: white">Show Personal Data</button>
+</div>
+
+<div class="container mt-2">
+    <button class="btn btn-success" onclick="showEditPersonalDataModal()">Edit Personal Data</button>
+</div>
+
+<div class="container mt-2">
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" onclick="showAddProfileModal()">Add Profile</button>
+            <br />
+            <h2>Profile Links</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Account</th>
+                        <th>Account Name</th>
+                        <th>URL</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="profileLinks">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Profile Modal -->
+<div class="modal fade mt-5" id="addProfileModal" tabindex="-1" role="dialog" aria-labelledby="addProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProfileModalLabel">Add Profile</h5>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="accId">Id: <span style="color: red">(Must be unique)</span></label>
+                    <input type="text" class="form-control" id="accId">
+                    <small id="idempty" class="form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="profileType">Select Profile Type:</label>
+                    <select class="form-control" id="profileType">
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Facebook">Facebook</option>
+                        <option value="GitHub">GitHub</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="accname">
+                    <small id="nameempty" class="form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="url">URL:</label>
+                    <input type="text" class="form-control" id="url">
+                    <small id="urlempty" class="form-text text-danger"></small>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="cancelAdd()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveProfile()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show Personal Data Modal-->
+<div class="modal fade" id="personalDataModal" tabindex="-1" role="dialog" aria-labelledby="personalDataModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="personalDataModal">Personal Data</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" class="form-control" id="username" value="@UserManager.FindByNameAsync(User.Identity.Name).Result.UserName" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="text" class="form-control" id="email" value="@UserManager.FindByNameAsync(User.Identity.Name).Result.Email" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" value="@UserManager.FindByNameAsync(User.Identity.Name).Result.Name" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <input type="text" class="form-control" id="address" value="@UserManager.FindByNameAsync(User.Identity.Name).Result.Address" disabled>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="cancelShow()">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Personal Data Modal -->
+<div class="modal fade" id="editPersonalDataModal" tabindex="-1" role="dialog" aria-labelledby="editPersonalDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPersonalDataModalLabel">Edit Personal Data</h5>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newEmail">New Email:</label>
+                    <input type="text" class="form-control" id="newEmail">
+                    <small id="emptyemail" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="newName">New Name:</label>
+                    <input type="text" class="form-control" id="newName">
+                    <small id="emptyname" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="newAddress">New Address:</label>
+                    <input type="text" class="form-control" id="newAddress">
+                    <small id="emptyaddress" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password:</label>
+                    <input type="password" class="form-control" id="newPassword">
+                    <small id="passwordcondition" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" class="form-control" id="confirmPassword">
+                    <small id="confirmPasswordError" class="form-text text-danger"></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="cancelData()">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="savePersonalData()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Html.Partial("_EditProfileModal")
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+    function showAddProfileModal() {
+        $('#addProfileModal').modal('show');
+    }
+
+    function showEditProfileModal() {
+        $('#editProfileModal').modal('show');
+    }
+
+    function showEditPersonalDataModal() {
+        $('#editPersonalDataModal').modal('show');
+    }
+
+    function showPersonalDataModal() {
+        $('#personalDataModal').modal('show');
+    }
+
+    function cancelAdd() {
+        $('#addProfileModal').modal('hide');
+    }
+
+    function cancelEdit() {
+        $('#editProfileModal').modal('hide');
+    }
+
+    function cancelData() {
+        $('#editPersonalDataModal').modal('hide');
+    }
+
+    function cancelShow() {
+        $('#personalDataModal').modal('hide');
+    }
+
+    function savePersonalData() {
+        var newEmail = $('#newEmail').val();
+        var newName = $('#newName').val();
+        var newAddress = $('#newAddress').val();
+        var newPassword = $('#newPassword').val();
+        var confirmPassword = $('#confirmPassword').val();
+
+        if (!newEmail.trim()) {
+            $('#emptyemail').text('Email should not be empty.');
+            return;
+        } $('#emptyemail').text('');
+
+        if (!newName.trim()) {
+            $('#emptyname').text('Name should not be empty.');
+            return;
+        } $('#emptyname').text('');
+
+        if (!newAddress.trim()) {
+            $('#emptyaddress').text('Address should not be empty.');
+            return;
+        } $('#emptyaddress').text('');
+
+        if (newPassword.length < 6 || newPassword.length > 100) {
+            $('#passwordcondition').text('Password must be between 6 and 100.');
+            return;
+        }
+
+        if (!/\d/.test(newPassword)) {
+            $('#passwordcondition').text('Password must contain at least one digit.');
+            return;
+        }
+
+        if (!/[A-Z]/.test(newPassword)) {
+            $('#passwordcondition').text('Password must contain at least one uppercase letter.');
+            return;
+        }
+
+        if (!/[a-z]/.test(newPassword)) {
+            $('#passwordcondition').text('Password must contain at least one lowercase letter.');
+            return;
+        } $('#passwordcondition').text('');
+
+        if (newPassword !== confirmPassword) {
+            $('#confirmPasswordError').text('Passwords do not match.');
+            return;
+        }
+
+        $('#confirmPasswordError').text('');
+
+        $('#newEmail').text('');
+        $('#newName').text('');
+        $('#newAddress').text('');
+        $('#newPassword').text('');
+        $('#confirmPassword').text('');
+
+        $.post('@Url.Action("UpdatePersonalData", "Home")', { newEmail: newEmail, newName: newName, newAddress: newAddress, newPassword: newPassword })
+            .done(function () {
+                alert('Personal data saved successfully!');
+                cancelData();
+                location.reload(); 
+            })
+            .fail(function () {
+                alert('Failed to update personal data');
+            });
+    }
+
+
+    function saveProfile() {
+        var accId = $('#accId').val();
+        var profileType = $('#profileType').val();
+        var name = $('#accname').val();
+        var url = $('#url').val();
+
+        if (!accId.trim()) {
+            $('#idempty').text('ID cannot be empty.');
+            return;
+        } $('#idempty').text('');
+
+        if (!name.trim()) {
+            $('#nameempty').text('Name cannot be empty.');
+            return;
+        } $('#nameempty').text('');
+
+        if (!url.trim()) {
+            $('#urlempty').text('URL cannot be empty.');
+            return;
+        }
+        $('#urlempty').text('');
+        
+        $('#accId').val('');
+        $('#accname').val('');
+        $('#url').val('');
+
+        $.post('@Url.Action("AddProfile", "Home")', { accId: accId, profileType: profileType, name: name, url: url })
+            .done(function () {
+                console.log("Added")
+                refreshProfileLinks();
+                cancelAdd();
+            })
+            .fail(function () {
+                alert('Failed to add profile');
+            });
+    }
+
+    function refreshProfileLinks() {
+        console.log('Refreshing profile links');
+        $('#profileLinks').empty();
+        $.get('@Url.Action("GetProfileLinks", "Home")')
+            .done(function (data) {
+                console.log('Received data:', data);
+                data.forEach(function (profile) {
+                    console.log('Profile:', profile);
+                    if (profile.accId == "" ) {
+                        $('#profileLinks').empty();
+                    }
+                    else
+                    {
+                        $('#profileLinks').append(`<tr id="${profile.accId}"><td>${profile.accId}</td><td>${profile.profileType}</td><td>${profile.name}</td><td>${profile.url}</td><td><button class="btn btn-success" onclick="editProfile('${profile.accId}', '${profile.profileType}')">Edit</button><button class="btn btn-danger" onclick="deleteProfile('${profile.Id}', '${profile.accId}')">Delete</button></td></tr>`);
+                    }
+                });
+                
+            })
+            .fail(function () {
+                alert('Failed to retrieve profile links');
+            });
+    }
+
+    function deleteProfile(Id, accId) {
+        $.ajax({
+            url: '@Url.Action("DeleteProfile", "Home")',
+            type: 'POST',
+            data: { accId: accId },
+            success: function () {
+                alert('Profile deleted successfully');
+                refreshProfileLinks();
+            },
+            error: function () {
+                alert('Failed to delete profile');
+            }
+        });
+    }
+
+
+    function editProfile(accId, profileType) {
+        $('#editId').val(accId);
+        $('#editProfileType').val(profileType);
+        $('#editProfileModal').modal('show');
+    }
+
+    function updateProfile(accId, profileType, name, url) {
+        
+
+        $.post('@Url.Action("EditProfile", "Home")', { accId: accId, profileType: profileType, name: name, url: url })
+            .done(function () {
+                $(`#${accId}`).remove();
+                refreshProfileLinks();
+                $('#editProfileModal').modal('hide');
+            })
+            .fail(function () {
+                alert('Failed to edit profile');
+            });
+    }
+
+
+    $(document).ready(function () {
+        console.log('Document ready');
+        refreshProfileLinks();
+    });
+
+</script>
